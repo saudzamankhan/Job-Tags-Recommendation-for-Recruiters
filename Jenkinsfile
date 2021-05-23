@@ -4,17 +4,20 @@ pipeline {
 	        stage('Clone Repository') {
 	        /* Cloning the repository to our workspace */
 	        steps {
-	        checkout scm
+			echo 'Hello World'
+	        /* checkout scm */
 	        }
 	   }
 	   stage('Build Image') {
 	        steps {
-	        docker build -t nlpproject .
+			echo 'Testing..'
+	        /* docker build -t nlpproject . */
 	        }
 	   }
 	   stage('Run Image') {
 	        steps {
-	        docker run -d -p 5000:5000 nlpproject
+			echo 'Testing..'
+	        /* docker run -d -p 5000:5000 nlpproject */
 	        }
 	   }
 	   stage('Testing'){

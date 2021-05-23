@@ -22,5 +22,9 @@ pipeline {
 	        bat 'docker run -d -p 5000:5000 nlpproject'
 	        }
 	   }
+	   stage('Testing') {
+	        steps {
+	        echo 'testing'
+	        }
 	}
 }

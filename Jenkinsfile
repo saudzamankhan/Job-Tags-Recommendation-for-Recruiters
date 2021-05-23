@@ -6,8 +6,7 @@ pipeline {
 	    agent any
 
         environment {
-	    CHECK_URL = "http://localhost:5000/"
-        CMD = "curl --write-out %{http_code} --silent --output /dev/null ${CHECK_URL}"
+        CMD = "curl -I http://localhost:5000/"
 		}
 
 	    stages {

@@ -18,3 +18,7 @@ CMD [ "server.py" ]
 
 # docker build -t nlpproject:latest .
 # docker run -it -p 5000:5000 nlpproject
+
+#For Jenkins, use the ones below
+#docker build -t nlpproject .
+#docker run -d -p 5000:5000 nlpproject

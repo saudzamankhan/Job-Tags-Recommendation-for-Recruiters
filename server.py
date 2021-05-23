@@ -193,4 +193,7 @@ def result():
 if __name__ == "__main__":
     # docker build -t nlpproject:latest .
     # docker run -it -p 5000:5000 nlpproject
+
+    # docker build -t --pull -t deploy .
+    # docker run -it -p 5000:5000 deploy
     app.run(host='0.0.0.0', port=5000, debug=True)

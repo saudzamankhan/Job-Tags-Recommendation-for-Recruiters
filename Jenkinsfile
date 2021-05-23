@@ -5,10 +5,6 @@ bat 'docker run -d -p 5000:5000 nlpproject' */
 pipeline {
 	    agent any
 
-        environment {
-        CMD = "curl -I http://localhost:5000/"
-		}
-
 	    stages {
 	        stage('Clone Repository') {
 	        /* Cloning the repository to our workspace */
@@ -18,6 +14,8 @@ pipeline {
 	   }
 	   stage('Build Image') {
 	        steps {
+			bat 'docker stop $(docker ps -a -q)'
+			bat 'docker rm $(docker ps -a -q)'
 	        bat 'docker build -t nlpproject .'
 	        }
 	   }
@@ -26,20 +24,5 @@ pipeline {
 	        bat 'docker run -d -p 5000:5000 nlpproject'
 	        }
 	   }
-	   stage('Testing'){
-	        steps {
-				script{
-                    bat "${CMD} > commandResult"
-                    env.status = readFile('commandResult').trim()
-					bat "echo ${env.status}"
-                    if (env.status == '200') {
-                        currentBuild.result = "SUCCESS"
-                    }
-                    else {
-                        currentBuild.result = "FAILURE"
-                    }
-                }
-	        }
-	   }
-   }
+	}
 }

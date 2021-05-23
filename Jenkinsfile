@@ -9,7 +9,7 @@ pipeline {
 	   }
 	   stage('Build Image') {
 	        steps {
-	        sh 'docker build -t nlpproject .'
+	        'docker build -t nlpproject .'
 	        }
 	   }
 	   stage('Run Image') {

@@ -9,12 +9,12 @@ pipeline {
 	   }
 	   stage('Build Image') {
 	        steps {
-	        'docker build -t nlpproject .'
+	        bat 'docker build -t nlpproject .'
 	        }
 	   }
 	   stage('Run Image') {
 	        steps {
-	        sh 'docker run -d -p 5000:5000 nlpproject'
+	        bat 'docker run -d -p 5000:5000 nlpproject'
 	        }
 	   }
 	   stage('Testing'){

@@ -3,7 +3,13 @@ bat 'docker build -t nlpproject .''
 bat 'docker run -d -p 5000:5000 nlpproject' */
 
 pipeline {
-	agent any
+	    agent any
+
+        environment {
+	    CHECK_URL = "http://localhost:5000/"
+        CMD = "curl --write-out %{http_code} --silent --output /dev/null ${CHECK_URL}"
+		}
+
 	    stages {
 	        stage('Clone Repository') {
 	        /* Cloning the repository to our workspace */
@@ -23,7 +29,17 @@ pipeline {
 	   }
 	   stage('Testing'){
 	        steps {
-	        echo 'Testing..'
+				script{
+                    bat "${CMD} > commandResult"
+                    env.status = readFile('commandResult').trim()
+					bat "echo ${env.status}"
+                    if (env.status == '200') {
+                        currentBuild.result = "SUCCESS"
+                    }
+                    else {
+                        currentBuild.result = "FAILURE"
+                    }
+                }
 	        }
 	   }
    }

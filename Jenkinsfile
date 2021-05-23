@@ -9,18 +9,18 @@ pipeline {
 	   }
 	   stage('Build Image') {
 	        steps {
-	         docker build -t nlpproject .
+	        docker build -t nlpproject .
 	        }
 	   }
 	   stage('Run Image') {
 	        steps {
-	         docker run -d -p 5000:5000 nlpproject
+	        docker run -d -p 5000:5000 nlpproject
 	        }
 	   }
 	   stage('Testing'){
 	        steps {
-	            echo 'Testing..'
-	            }
+	        echo 'Testing..'
+	        }
 	   }
      }
 }

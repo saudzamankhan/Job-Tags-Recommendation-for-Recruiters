@@ -1,3 +1,7 @@
+/* For Jenkins pipeline script, use the commands below (bat in case of windows and ssh in case of linux)
+bat 'docker build -t nlpproject .''
+bat 'docker run -d -p 5000:5000 nlpproject' */
+
 pipeline {
 	agent any
 	    stages {
@@ -9,18 +13,18 @@ pipeline {
 	   }
 	   stage('Build Image') {
 	        steps {
-	         docker build -t nlpproject .'
+	        bat 'docker build -t nlpproject .'
 	        }
 	   }
 	   stage('Run Image') {
 	        steps {
-	         docker run -d -p 5000:5000 nlpproject
+	        bat 'docker run -d -p 5000:5000 nlpproject'
 	        }
 	   }
 	   stage('Testing'){
 	        steps {
-	            echo 'Testing..'
-	            }
+	        echo 'Testing..'
+	        }
 	   }
-    }
+     }
 }

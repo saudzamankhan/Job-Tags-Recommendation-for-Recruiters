@@ -14,8 +14,8 @@ pipeline {
 	   }
 	   stage('Build Image') {
 	        steps {
-			bat 'docker stop $(docker ps -a -q)'
-			bat 'docker rm $(docker ps -a -q)'
+			bat 'docker container stop $(docker container list -aq)'
+			bat 'docker container rm $(docker container ls –aq)'
 	        bat 'docker build -t nlpproject .'
 	        }
 	   }

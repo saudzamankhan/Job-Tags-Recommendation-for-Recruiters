@@ -8,7 +8,7 @@ pipeline {
         environment {
 	    CHECK_URL = "http://localhost:5000/"
         CMD = "curl --write-out %{http_code} --silent --output /dev/null ${CHECK_URL}"
-		}
+		} 
 
 	    stages {
 	        stage('Clone Repository') {

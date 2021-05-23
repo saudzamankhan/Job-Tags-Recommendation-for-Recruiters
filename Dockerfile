@@ -16,9 +16,10 @@ ENTRYPOINT [ "python3" ]
 
 CMD [ "server.py" ]
 
+# For use on command line
 # docker build -t nlpproject:latest .
 # docker run -it -p 5000:5000 nlpproject
 
-#For Jenkins, use the ones below
-#docker build -t nlpproject .
-#docker run -d -p 5000:5000 nlpproject
+#For Jenkins pipeline script, use the commands below (bat in case of windows and ssh in case of linux)
+#bat 'docker build -t nlpproject .''
+#bat 'docker run -d -p 5000:5000 nlpproject'

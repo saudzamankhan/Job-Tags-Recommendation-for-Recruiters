@@ -12,14 +12,13 @@ RUN pip3 install -r requirements.txt
 
 EXPOSE 5001
 
-#CMD python3 serve_model.py
-CMD python3 train_model.py && serve_model.py
-
+ENTRYPOINT [ "python3" ]
+CMD [ "serve_model.py" ]
 
 #=============================
-#ENTRYPOINT [ "python3" ]
-#CMD [ "build_model.py" ]
-
+#CMD python3 serve_model.py
+#CMD python3 train_model.py && serve_model.py
+#=============================
 
 #Docker commands
 # For use on command line

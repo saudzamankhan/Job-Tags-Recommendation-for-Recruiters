@@ -105,7 +105,18 @@ def TrainingData_Tags_Distribution():
     return all_tags_dfa
 
 
-def monitor_model_input(input_descriptions_history):
+def monitor_model_out(target_predictions_history):
+    td_dist = TrainingData_Tags_Distribution()
+    tp_hist = frequency_of_words(target_predictions_history)
+
+    # Welsh's t-test assumes unequal sample sizes
+    decision = MakeDecision(stats.ttest_ind(
+        td_dist['count'], tp_hist['count'], equal_var=False).pvalue)
+
+    return decision
+
+
+def monitor_model_inp(input_descriptions_history):
     input_train_dist = frequency_of_words(
         loaded_preprocessed_trainset["description"])
     input_descs_dist = frequency_of_words(input_descriptions_history)
@@ -120,14 +131,41 @@ def monitor_model_input(input_descriptions_history):
     return decision
 
 
-def monitor_model_output(target_predictions_history):
-    # finding tags distributions
-    td_dist = TrainingData_Tags_Distribution()
-    tp_hist = frequency_of_words(target_predictions_history)
+@app.route('/monitorinput', methods=['POST'])
+def monitor_model_input():
+    if request.method == 'POST':
+        print("1")
+        data = request.get_json(force=True)
+        input_descriptions_history = data['desc']
 
-    # Welsh's t-test assumes unequal sample sizes
-    decision = MakeDecision(stats.ttest_ind(
-        td_dist['count'], tp_hist['count'], equal_var=False).pvalue)
+        input_train_dist = frequency_of_words(
+            loaded_preprocessed_trainset["description"])
+        input_descs_dist = frequency_of_words(input_descriptions_history)
+
+        # p_value = ComputeChiSquareGOF(
+        #   input_train_dist['count'], input_descs_dist['count'])
+
+        # Welshs t-test assumes unequal sample sizes
+        decision = MakeDecision(stats.ttest_ind(
+            input_train_dist['count'], input_descs_dist['count'], equal_var=False).pvalue)
+
+    return decision
+
+
+@app.route('/monitoroutput', methods=['POST'])
+def monitor_model_output():
+    # finding tags distributions
+    if request.method == 'POST':
+        print("2")
+        data = request.get_json(force=True)
+        target_predictions_history = data['desc']
+
+        td_dist = TrainingData_Tags_Distribution()
+        tp_hist = frequency_of_words(target_predictions_history)
+
+        # Welsh's t-test assumes unequal sample sizes
+        decision = MakeDecision(stats.ttest_ind(
+            td_dist['count'], tp_hist['count'], equal_var=False).pvalue)
 
     return decision
 
@@ -135,6 +173,52 @@ def monitor_model_output(target_predictions_history):
 @app.route('/')
 def index():
     return render_template('home.html')
+
+
+@app.route('/predictresult', methods=['POST'])
+def predictionresult():
+    if request.method == 'POST':
+        data = request.get_json(force=True)
+        description = str(data['desc'])
+
+        # Preprocessing the description input
+        description = BeautifulSoup(description, "html.parser").get_text()
+        description = unicodedata.normalize('NFKD', description).encode(
+            'ascii', 'ignore').decode('utf-8', 'ignore')
+        description = special_characters_removal(description)
+        description = description.lower()
+        description = remove_stopwords(description)
+
+        wordlist_description = nltk.word_tokenize(description)
+        lemmatizer = WordNetLemmatizer()
+        description = ' '.join([lemmatizer.lemmatize(lemw)
+                                for lemw in wordlist_description])
+
+        test_bow = sp_sparse.vstack([sp_sparse.csr_matrix(
+            create_bow(description, loaded_wordsindex, 10000))])
+
+        y_pred_prob = loaded_model.predict_proba(test_bow)
+
+        t = 0.3  # setting the threshold value
+        result = (y_pred_prob >= t).astype(int)
+        prediction = loaded_multilb.inverse_transform(result)
+
+        if len(prediction[0]) != 0:
+            print(str(prediction[0][0]))
+            f = open("descriptions.txt", 'a')
+            f.write(description)
+            f.write('\n')
+
+            predictions_list = ""
+            f = open("predictions.txt", 'a')
+            for i in range(len(prediction[0])):
+                f.write(prediction[0][i])
+                predictions_list += str(prediction[0][i]) + "\n"
+                f.write('\n')
+
+            return predictions_list
+
+    return "No Tags Inferred"
 
 
 @app.route('/predict', methods=['POST'])
@@ -164,30 +248,34 @@ def result():
         t = 0.3  # setting the threshold value
         result = (y_pred_prob >= t).astype(int)
         prediction = loaded_multilb.inverse_transform(result)
-        print(str(prediction[0][0]))
+        print(len(prediction))
 
-        f = open("descriptions.txt", 'a')
-        f.write(description)
-        f.write('\n')
-
-        f = open("predictions.txt", 'a')
-        for i in range(len(prediction[0])):
-            f.write(prediction[0][i])
+        if len(prediction[0]) != 0:
+            print(str(prediction[0][0]))
+            f = open("descriptions.txt", 'a')
+            f.write(description)
             f.write('\n')
 
-        f = open("descriptions.txt", 'r')
-        history_descriptions = f.read().replace("\n", " ")
-        f.close()
-        f = open("predictions.txt", 'r')
-        history_predictions = f.read().replace("\n", " ")
-        f.close()
+            f = open("predictions.txt", 'a')
+            for i in range(len(prediction[0])):
+                f.write(prediction[0][i])
+                f.write('\n')
 
-        input_decision = monitor_model_input(history_descriptions)
-        print(input_decision)
-        output_decision = monitor_model_output(history_predictions)
-        print(output_decision)
+            f = open("descriptions.txt", 'r')
+            history_descriptions = f.read().replace("\n", " ")
+            f.close()
+            f = open("predictions.txt", 'r')
+            history_predictions = f.read().replace("\n", " ")
+            f.close()
 
-    return render_template("prediction.html", prediction=str(prediction))
+            input_decision = monitor_model_inp(history_descriptions)
+            print(input_decision)
+            output_decision = monitor_model_out(history_predictions)
+            print(output_decision)
+
+            return render_template("prediction.html", prediction=str(prediction))
+
+    return "No Tags inferred"
 
 
 if __name__ == "__main__":

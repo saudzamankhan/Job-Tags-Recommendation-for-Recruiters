@@ -12,8 +12,8 @@ RUN pip3 install -r requirements.txt
 
 EXPOSE 5000
 
-CMD python3 /train_and_serve_model/serve_model.py
-#CMD python3 /train_and_serve_model/train_model.py && train_and_serve_model/serve_model.py
+CMD python3 serve_model.py
+#CMD python3 train_model.py && serve_model.py
 
 
 #=============================

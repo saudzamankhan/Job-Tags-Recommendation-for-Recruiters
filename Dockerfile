@@ -14,7 +14,7 @@ EXPOSE 5000
 
 ENTRYPOINT [ "python3" ]
 
-CMD [ "server.py" ]
+CMD [ "build_model.py" ]
 
 # For use on command line
 # docker build -t nlpproject:latest .

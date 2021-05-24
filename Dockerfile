@@ -12,10 +12,16 @@ RUN pip3 install -r requirements.txt
 
 EXPOSE 5000
 
-ENTRYPOINT [ "python3" ]
+CMD python3 /train_and_serve_model/serve_model.py
+#CMD python3 /train_and_serve_model/train_model.py && train_and_serve_model/serve_model.py
 
-CMD [ "build_model.py" ]
 
+#=============================
+#ENTRYPOINT [ "python3" ]
+#CMD [ "build_model.py" ]
+
+
+#Docker commands
 # For use on command line
 # docker build -t nlpproject:latest .
 # docker run -it -p 5000:5000 nlpproject

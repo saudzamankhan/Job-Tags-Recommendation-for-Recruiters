@@ -19,7 +19,7 @@ pipeline {
 	   }
 	   stage('Run Image') {
 	        steps {
-	        bat 'docker run -d -p 5000:5000 nlpproject'
+	        bat 'docker run -d -p 5001:5001 nlpproject'
 	        }
 	   }
 	   stage('Testing') {

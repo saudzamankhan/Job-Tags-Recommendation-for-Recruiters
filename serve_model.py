@@ -196,4 +196,4 @@ if __name__ == "__main__":
 
     # docker build -t --pull -t deploy .
     # docker run -it -p 5000:5000 deploy
-    app.run(host='0.0.0.0', port=5000, debug=True)
+    app.run(host='0.0.0.0', port=5001, debug=True)

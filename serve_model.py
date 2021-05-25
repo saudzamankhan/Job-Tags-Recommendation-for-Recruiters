@@ -65,25 +65,7 @@ def frequency_of_words(x):
     return words_df
 
 
-def ComputeChiSquareGOF(expected, observed):
-    """
-    Runs a chi-square goodness-of-fit test and returns the p-value.
-    Inputs:
-    - expected: numpy array of expected values.
-    - observed: numpy array of observed values.
-    Returns: p-value
-    """
-    expected_scaled = expected / float(sum(expected)) * sum(observed)
-    result = stats.chisquare(f_obs=observed, f_exp=expected_scaled)
-    return result[1]
-
-
 def MakeDecision(p_value):
-    """ 
-    Makes a goodness-of-fit decision on an input p-value.
-    Input: p_value: the p-value from a goodness-of-fit test.
-    Returns: "different" if the p-value is below 0.05, "same" otherwise
-    """
     return "different" if p_value < 0.05 else "same"
 
 
@@ -100,8 +82,7 @@ def TrainingData_Tags_Distribution():
                                 'count': list(distribution.values())})
 
     all_tags_dfa = all_tags_dfa.sort_values("count")
-    #print("\n\nTraining data tags distribution for the first 100 tags: ")
-    #ga = all_tags_dfa.nlargest(columns="Count", n=100)
+
     return all_tags_dfa
 
 
@@ -121,9 +102,6 @@ def monitor_model_inp(input_descriptions_history):
         loaded_preprocessed_trainset["description"])
     input_descs_dist = frequency_of_words(input_descriptions_history)
 
-    # p_value = ComputeChiSquareGOF(
-    #   input_train_dist['count'], input_descs_dist['count'])
-
     # Welshs t-test assumes unequal sample sizes
     decision = MakeDecision(stats.ttest_ind(
         input_train_dist['count'], input_descs_dist['count'], equal_var=False).pvalue)
@@ -141,9 +119,6 @@ def monitor_model_input():
         input_train_dist = frequency_of_words(
             loaded_preprocessed_trainset["description"])
         input_descs_dist = frequency_of_words(input_descriptions_history)
-
-        # p_value = ComputeChiSquareGOF(
-        #   input_train_dist['count'], input_descs_dist['count'])
 
         # Welshs t-test assumes unequal sample sizes
         decision = MakeDecision(stats.ttest_ind(
@@ -282,6 +257,4 @@ if __name__ == "__main__":
     # docker build -t nlpproject:latest .
     # docker run -it -p 5000:5000 nlpproject
 
-    # docker build -t --pull -t deploy .
-    # docker run -it -p 5000:5000 deploy
     app.run(host='0.0.0.0', port=8080, debug=True)

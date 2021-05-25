@@ -22,7 +22,7 @@ input_decision = requests.post(url, json={'desc': history_descriptions})
 print("Input distributions are: ", input_decision.text)
 
 # Comparing distributions of tags predictions for user inputted job descriptions and training data
-# target outcome using Welsh's t tests which can handle samples of different sizes in comparisonn
+# target outcome using Welsh's t tests which can handle samples of different sizes in comparison
 url = 'http://localhost:5001/monitoroutput'
 output_decision = requests.post(url, json={'desc': history_predictions})
 print("Output distributions are: ", output_decision.text)
